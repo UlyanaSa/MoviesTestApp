@@ -2,15 +2,17 @@ package com.osvin.moviestestapp.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.osvin.moviestestapp.AppRepository
 import com.osvin.moviestestapp.databinding.ActivityMoviesBinding
-import com.osvin.moviestestapp.models.MovieModel
-import com.osvin.moviestestapp.network.MovieAPI
+import com.osvin.moviestestapp.data.network.MovieAPI
+import com.osvin.moviestestapp.data.storage.SharedPreferences
 import com.osvin.moviestestapp.ui.adapter.MoviesAdapter
 import com.osvin.moviestestapp.ui.viewModel.MovieViewModel
 import com.osvin.moviestestapp.ui.viewModel.MovieViewModelFactory
@@ -26,9 +28,8 @@ class MoviesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMoviesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val api = MovieAPI.getInstance()
-        val offset = 0
-        val appRepository = AppRepository(api, offset)
+
+        val appRepository = AppRepository(this)
 
 
         moviesAdapter = MoviesAdapter()
@@ -55,6 +56,16 @@ class MoviesActivity : AppCompatActivity() {
                 }
             }
         })
+
+
+        moviesAdapter.getItemId(19)
+
+
+        movieViewModel.offset.observe(this, Observer {
+
+        })
+
+
 
 
     }

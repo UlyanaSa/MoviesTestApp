@@ -1,18 +1,13 @@
 package com.osvin.moviestestapp
 
-import com.osvin.moviestestapp.network.MovieAPI
+import android.content.Context
+import com.osvin.moviestestapp.data.network.MovieAPI
+import com.osvin.moviestestapp.data.storage.SharedPreferences
 import com.osvin.moviestestapp.utils.Constants
 
-class AppRepository(private val api: MovieAPI, private val offset: Int) {
+class AppRepository(private val api: MovieAPI) {
 
 
-//    fun getCurrentOffset(): Int {
-//        return movieStorage.getCurrentOffset()
-//    }
-//
-//    fun saveCurrentOffset(offset: Int): Boolean {
-//        return movieStorage.saveOffset(offset)
-//    }
 
-    suspend fun getAllMovies() = api.getMovieList(offset, Constants.API_KEY)
+    suspend fun getAllMovies(offset: Int) = api.getMovieList(offset, Constants.API_KEY)
 }

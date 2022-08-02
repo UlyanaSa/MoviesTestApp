@@ -1,4 +1,4 @@
-package com.osvin.moviestestapp.network
+package com.osvin.moviestestapp.data.network
 
 import com.osvin.moviestestapp.models.ResponseBodyClass
 import com.osvin.moviestestapp.utils.Constants

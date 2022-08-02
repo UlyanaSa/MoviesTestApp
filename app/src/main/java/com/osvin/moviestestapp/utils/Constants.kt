@@ -6,5 +6,6 @@ object Constants {
     const val SHARED_PREF = "SHARED_PREF"
     const val OFFSET_SIZE = "OFFSET_SIZE"
     const val OFFSET_DEFAULT = "OFSSET_DEFAULT"
+    const val PAGE_SIZE = 20
 
 }
