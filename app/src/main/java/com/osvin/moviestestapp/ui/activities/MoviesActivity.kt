@@ -2,26 +2,23 @@ package com.osvin.moviestestapp.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.osvin.moviestestapp.data.network.ApiMoviesRepository
 import com.osvin.moviestestapp.databinding.ActivityMoviesBinding
-import com.osvin.moviestestapp.data.network.MovieAPI
 import com.osvin.moviestestapp.ui.adapter.DefaultLoadingAdapter
 import com.osvin.moviestestapp.ui.adapter.MoviesAdapter
 import com.osvin.moviestestapp.ui.adapter.TryAgainAction
 import com.osvin.moviestestapp.ui.viewModel.MovieViewModel
-import com.osvin.moviestestapp.ui.viewModel.MovieViewModelFactory
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class MoviesActivity : AppCompatActivity() {
 
-    private lateinit var movieViewModel: MovieViewModel
+    private val movieViewModel: MovieViewModel by viewModels()
     private lateinit var binding: ActivityMoviesBinding
     private lateinit var moviesAdapter: MoviesAdapter
     private lateinit var mainStateHolder: DefaultLoadingAdapter.Holder
@@ -34,13 +31,8 @@ class MoviesActivity : AppCompatActivity() {
         binding = ActivityMoviesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val api = MovieAPI.getInstance()
-        val ioDisp = Dispatchers.IO
-        val apiMoviesRepository = ApiMoviesRepository(api, ioDisp)
-        movieViewModel = ViewModelProvider(this, MovieViewModelFactory(apiMoviesRepository))[MovieViewModel::class.java]
-
         moviesAdapter = MoviesAdapter()
-        val tryAgainAction: TryAgainAction = {moviesAdapter.retry()}
+        val tryAgainAction:TryAgainAction = {moviesAdapter.retry()}
         val footerLoadingAdapter = DefaultLoadingAdapter(tryAgainAction)
         val combinedAdapters = moviesAdapter.withLoadStateFooter(footerLoadingAdapter)
         binding.rvMovieList.adapter = combinedAdapters

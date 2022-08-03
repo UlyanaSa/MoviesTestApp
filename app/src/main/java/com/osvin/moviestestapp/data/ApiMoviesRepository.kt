@@ -1,21 +1,21 @@
-package com.osvin.moviestestapp.data.network
-
+package com.osvin.moviestestapp.data
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.osvin.moviestestapp.domain.MovieRepository
-import com.osvin.moviestestapp.models.MovieModel
+import com.osvin.moviestestapp.data.network.MovieAPI
+import com.osvin.moviestestapp.domain.models.MovieModel
 import com.osvin.moviestestapp.utils.Constants
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import java.lang.IllegalStateException
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ApiMoviesRepository(private val api: MovieAPI, private val ioDispatcher: CoroutineDispatcher ):MovieRepository {
 
-    private val enableErrorFlow = MutableStateFlow(false)
+class ApiMoviesRepository
+@Inject constructor(private val api: MovieAPI){
 
-    override suspend fun getPageMovies(): Flow<PagingData<MovieModel>> {
+    suspend fun getPageMovies(): Flow<PagingData<MovieModel>> {
 
         val loader: MoviePageLoader = { pageIndex ->
             getAllMovies(pageIndex)
@@ -26,21 +26,14 @@ class ApiMoviesRepository(private val api: MovieAPI, private val ioDispatcher: C
                 enablePlaceholders = false,
                 initialLoadSize = 1
             ),
-            pagingSourceFactory = {MoviePagingSource(loader, Constants.PAGE_SIZE)}
+            pagingSourceFactory = { MoviePagingSource(loader) }
         ).flow
     }
 
-    override fun isErrorsEnabled(): Flow<Boolean> = enableErrorFlow
 
-    override fun setErrorsEnabled(value: Boolean) {
-        enableErrorFlow.value = value
-    }
-
-    private suspend fun getAllMovies(pageIndex: Int): List<MovieModel> = withContext(ioDispatcher){
+    private suspend fun getAllMovies(pageIndex: Int): List<MovieModel> = withContext(Dispatchers.IO){
 
         delay(2000)
-        if(enableErrorFlow.value) throw IllegalStateException("Error!")
-
         val offset = 20*pageIndex
         val response = api.getMovieList(offset, Constants.API_KEY)
         val movieList = ArrayList<MovieModel>()
@@ -60,6 +53,4 @@ class ApiMoviesRepository(private val api: MovieAPI, private val ioDispatcher: C
         }
         return@withContext movieList
     }
-
-
 }

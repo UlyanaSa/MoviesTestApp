@@ -7,22 +7,25 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowInsets
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.osvin.moviestestapp.R
 import com.osvin.moviestestapp.ui.viewModel.SplashViewModel
 
-@SuppressLint("CustomSplashScreen")
-@Suppress("DEPRECATION")
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
-    private lateinit var splashViewModel: SplashViewModel
+   private val splashViewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        initViewModel()
-
+        splashViewModel.initSplashScreen()
         observeViewModel()
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ){
@@ -33,10 +36,12 @@ class SplashActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
             )
         }
+
+
     }
 
     private fun observeViewModel() {
-        splashViewModel.initSplashScreen()
+
         splashViewModel.splashModel.observe(this, Observer {
             val intent = Intent(this, MoviesActivity::class.java)
             startActivity(intent)
@@ -44,7 +49,5 @@ class SplashActivity : AppCompatActivity() {
         })
     }
 
-    private fun initViewModel() {
-        splashViewModel = ViewModelProvider(this)[SplashViewModel::class.java]
-    }
+
 }

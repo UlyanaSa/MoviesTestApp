@@ -10,12 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.osvin.moviestestapp.databinding.DefaultLoaderBinding
 
+
 typealias TryAgainAction = () -> Unit
-
-class DefaultLoadingAdapter(private val tryAgainAction: TryAgainAction):LoadStateAdapter<DefaultLoadingAdapter.Holder>() {
-
-
-
+class DefaultLoadingAdapter
+    constructor(private val tryAgainAction: TryAgainAction):LoadStateAdapter<DefaultLoadingAdapter.Holder>() {
 
     override fun onBindViewHolder(holder: Holder, loadState: LoadState) {
         holder.bind(loadState)
@@ -30,7 +28,7 @@ class DefaultLoadingAdapter(private val tryAgainAction: TryAgainAction):LoadStat
     class Holder(
         private val binding: DefaultLoaderBinding,
         private val swipeRefreshLayout: SwipeRefreshLayout?,
-        private val tryAgainAction: TryAgainAction
+        tryAgainAction: () -> Unit
     ):RecyclerView.ViewHolder(binding.root) {
         init {
             binding.button.setOnClickListener{

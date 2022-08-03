@@ -1,4 +1,4 @@
-package com.osvin.moviestestapp.models
+package com.osvin.moviestestapp.domain.models
 
 import com.google.gson.annotations.SerializedName
 

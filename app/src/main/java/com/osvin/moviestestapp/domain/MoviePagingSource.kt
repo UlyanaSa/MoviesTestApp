@@ -1,14 +1,13 @@
-package com.osvin.moviestestapp.ui.adapter
-
+package com.osvin.moviestestapp.domain
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.osvin.moviestestapp.models.MovieModel
+import com.osvin.moviestestapp.domain.models.MovieModel
 import java.lang.Exception
 
 
-typealias MoviePageLoader = suspend (pageIndex: Int) -> List<MovieModel>
 
-class MoviePagingSource(private val loader:MoviePageLoader, private val pageSize: Int):
+
+class MoviePagingSource(private val loader:MoviePageLoader):
     PagingSource<Int, MovieModel>() {
     override fun getRefreshKey(state: PagingState<Int, MovieModel>): Int? {
         return null
@@ -31,3 +30,6 @@ class MoviePagingSource(private val loader:MoviePageLoader, private val pageSize
     }
 
 }
+
+typealias MoviePageLoader = suspend (pageIndex: Int) -> List<MovieModel>
+

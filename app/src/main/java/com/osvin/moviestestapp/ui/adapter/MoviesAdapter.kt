@@ -3,12 +3,11 @@ package com.osvin.moviestestapp.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.osvin.moviestestapp.databinding.ItemMovieBinding
-import com.osvin.moviestestapp.models.MovieModel
+import com.osvin.moviestestapp.domain.models.MovieModel
 
 
 
@@ -25,15 +24,6 @@ class MoviesAdapter: PagingDataAdapter<MovieModel, MoviesAdapter.MoviesViewHolde
     }
 
     class MoviesViewHolder(val binding: ItemMovieBinding): RecyclerView.ViewHolder(binding.root)
-
-//    //private var movieList: List<MovieModel> = listOf()
-//    fun setMovieList(movieModelList: List<MovieModel>){
-//       // val diffUtilCallback = MovieModelListComparator(movieList,movieModelList)
-//       // val diffUtilResult = DiffUtil.calculateDiff(diffUtilCallback)
-//       // this.movieList = movieModelList
-//       // diffUtilResult.dispatchUpdatesTo(this)
-//        differ.submitList(movieModelList)
-//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesViewHolder {
         return MoviesViewHolder(

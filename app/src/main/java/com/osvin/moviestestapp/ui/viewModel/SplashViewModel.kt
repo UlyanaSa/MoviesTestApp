@@ -1,15 +1,15 @@
 package com.osvin.moviestestapp.ui.viewModel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.osvin.moviestestapp.models.SplashModel
+import androidx.lifecycle.*
+import com.osvin.moviestestapp.domain.models.SplashModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SplashViewModel(app: Application): AndroidViewModel(app)  {
+@HiltViewModel
+class SplashViewModel
+@Inject constructor(): ViewModel()  {
 
     private val _splashModel: MutableLiveData<SplashModel> = MutableLiveData()
     val splashModel: LiveData<SplashModel> = _splashModel
