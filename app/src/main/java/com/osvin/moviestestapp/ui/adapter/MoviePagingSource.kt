@@ -1,4 +1,4 @@
-package com.osvin.moviestestapp.data.network
+package com.osvin.moviestestapp.ui.adapter
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

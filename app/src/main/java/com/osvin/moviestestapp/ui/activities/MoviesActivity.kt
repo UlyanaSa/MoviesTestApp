@@ -2,26 +2,31 @@ package com.osvin.moviestestapp.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.view.View
-import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.osvin.moviestestapp.AppRepository
+import com.osvin.moviestestapp.data.network.ApiMoviesRepository
 import com.osvin.moviestestapp.databinding.ActivityMoviesBinding
 import com.osvin.moviestestapp.data.network.MovieAPI
-import com.osvin.moviestestapp.data.storage.SharedPreferences
+import com.osvin.moviestestapp.ui.adapter.DefaultLoadingAdapter
 import com.osvin.moviestestapp.ui.adapter.MoviesAdapter
+import com.osvin.moviestestapp.ui.adapter.TryAgainAction
 import com.osvin.moviestestapp.ui.viewModel.MovieViewModel
 import com.osvin.moviestestapp.ui.viewModel.MovieViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
+
 
 class MoviesActivity : AppCompatActivity() {
 
     private lateinit var movieViewModel: MovieViewModel
     private lateinit var binding: ActivityMoviesBinding
     private lateinit var moviesAdapter: MoviesAdapter
+    private lateinit var mainStateHolder: DefaultLoadingAdapter.Holder
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,45 +34,42 @@ class MoviesActivity : AppCompatActivity() {
         binding = ActivityMoviesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val appRepository = AppRepository(this)
-
+        val api = MovieAPI.getInstance()
+        val ioDisp = Dispatchers.IO
+        val apiMoviesRepository = ApiMoviesRepository(api, ioDisp)
+        movieViewModel = ViewModelProvider(this, MovieViewModelFactory(apiMoviesRepository))[MovieViewModel::class.java]
 
         moviesAdapter = MoviesAdapter()
-        binding.rvMovieList.adapter = moviesAdapter
-        binding.rvMovieList?.layoutManager = LinearLayoutManager(this)
-        movieViewModel = ViewModelProvider(this, MovieViewModelFactory(appRepository))[MovieViewModel::class.java]
-        movieViewModel.getAllMovies()
+        val tryAgainAction: TryAgainAction = {moviesAdapter.retry()}
+        val footerLoadingAdapter = DefaultLoadingAdapter(tryAgainAction)
+        val combinedAdapters = moviesAdapter.withLoadStateFooter(footerLoadingAdapter)
+        binding.rvMovieList.adapter = combinedAdapters
+        binding.rvMovieList.layoutManager = LinearLayoutManager(this)
 
-        movieViewModel.movieListLiveData.observe(this, Observer {
-            moviesAdapter.setMovieList(it)
-        })
+        collectUiState()
+        observeLoadState()
 
-        movieViewModel.errorMessage.observe(this, Observer {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-            binding.errorText?.visibility = View.VISIBLE
-        })
+        mainStateHolder = DefaultLoadingAdapter.Holder(
+            binding.defaultLoader,
+            binding.swipeRefreshLayout,
+            tryAgainAction
+        )
+    }
 
-        movieViewModel.loading.observe(this, Observer {
-            binding.apply {
-                if(it){
-                    progressBar.visibility = View.VISIBLE
-                }else{
-                    progressBar.visibility = View.GONE
-                }
+    private fun observeLoadState() {
+        lifecycleScope.launch {
+            moviesAdapter.loadStateFlow.debounce(200).collectLatest {
+                mainStateHolder.bind(it.refresh)
             }
-        })
+        }
+    }
 
-
-        moviesAdapter.getItemId(19)
-
-
-        movieViewModel.offset.observe(this, Observer {
-
-        })
-
-
-
-
+    private fun collectUiState() {
+        lifecycleScope.launch{
+            movieViewModel.getMovies().collectLatest {
+                moviesAdapter.submitData(it)
+            }
+        }
     }
 
 
