@@ -3,6 +3,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.osvin.moviestestapp.data.network.MovieAPI
+import com.osvin.moviestestapp.domain.MoviePageLoader
+import com.osvin.moviestestapp.domain.MoviePagingSource
 import com.osvin.moviestestapp.domain.models.MovieModel
 import com.osvin.moviestestapp.utils.Constants
 import kotlinx.coroutines.Dispatchers
